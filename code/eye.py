@@ -49,3 +49,7 @@ class Eye(object):
                     self.display.set_pixel(x, y, 1)
 
         self.display.write_display()
+
+    def turn_off(self):
+        self.display.clear()
+        self.display.write_display()
