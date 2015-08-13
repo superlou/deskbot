@@ -29,10 +29,85 @@ if __name__ == "__main__":
     i = 0.
     fs = 100.
 
-    while(1):
-        pbs[0] = pi/2.0 * sin(2.*pi*0.5*i/fs)
-        pbs[1] = pi/2.0 * sin(2.*pi*0.5*i/fs)
-        pbs[2] = pi/2.0 * sin(2.*pi*0.5*i/fs)
-        i = i + 1
+    # while(1):
+    #     pbs[0] = 0.7 * pi/2.0 * sin(2.*pi*0.5*i/fs)
+    #     pbs[1] = 0.7 * pi/2.0 * sin(2.*pi*0.5*i/fs)
+    #     pbs[2] = 0.7 * pi/2.0 * sin(2.*pi*0.5*i/fs)
+    #     i = i + 1
+    #
+    #     time.sleep(1./fs)
 
-        time.sleep(1./fs)
+    while(1):
+        text = raw_input("> ")
+
+        if "cycle" in text:
+            i = 0
+            rate = 1
+            while(i < (fs / rate)):
+                pbs[0] = 0.7 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[1] = 0.7 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[2] = 0.7 * pi/2.0 * sin(2.*pi*rate*i/fs)
+
+                i = i + 1
+                time.sleep(1./fs)
+        elif "bounce" in text:
+            i = 0
+            rate = 2
+            while(i < (fs / rate)):
+                pbs[0] = 0.1 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[1] = 0.1 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[2] = 0.1 * pi/2.0 * sin(2.*pi*rate*i/fs)
+
+                i = i + 1
+                time.sleep(1./fs)
+        elif "nod" in text:
+            i = 0
+            rate = 3
+            while(i < (fs / rate * 2)):
+                pbs[0] = 0.1 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[1] = -0.1 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[2] = -0.1 * pi/2.0 * sin(2.*pi*rate*i/fs)
+
+                i = i + 1
+                time.sleep(1./fs)
+        elif "tilt" in text:
+            i = 0
+            rate = 2
+            while(i < (fs / rate * 2)):
+                pbs[0] = 0
+                pbs[1] = 0.2 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[2] = -0.2 * pi/2.0 * sin(2.*pi*rate*i/fs)
+
+                i = i + 1
+                time.sleep(1./fs)
+        elif "lol" in text:
+            i = 0
+            rate = 1
+            while(i < (fs / rate * 4)):
+                pbs[0] = 0.2 * pi/2.0 * sin(2.*pi*rate*i/fs)
+                pbs[1] = 0.2 * pi/2.0 * sin(2.*pi*rate*i/fs + pi / 3.)
+                pbs[2] = 0.2 * pi/2.0 * sin(2.*pi*rate*i/fs + 2. * pi / 3.)
+
+                i = i + 1
+                time.sleep(1./fs)
+
+            pbs[0] = 0
+            pbs[1] = 0
+            pbs[2] = 0
+        elif "reset" in text:
+            pbs[0] = 0
+            pbs[1] = 0
+            pbs[2] = 0
+        elif "sleep" in text:
+            pbs[0] = -90 * pi / 180.
+            pbs[1] = -90 * pi / 180.
+            pbs[2] = -90 * pi / 180.
+        else:
+            commands = text.split(",")
+            for command in commands:
+                tokens = command.split("=")
+
+                if len(tokens) == 2:
+                    motor = int(tokens[0])
+                    angle = float(tokens[1]) * pi / 180.0
+                    pbs[motor] = angle
