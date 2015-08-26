@@ -74,15 +74,26 @@ class KinematicModel(object):
 
         return np.array(solution)
 
-    def c_for(self, theta, phi):
+    def state_for(self, theta, phi):
         """Determine locations of C0, C1, and C2 given thetas and phis"""
         c0 = lambdify((self.theta0, self.phi0), self.C0)(theta[0], phi[0])
         c1 = lambdify((self.theta1, self.phi1), self.C1)(theta[1], phi[1])
         c2 = lambdify((self.theta2, self.phi2), self.C2)(theta[2], phi[2])
 
-        return c0, c1, c2
+        centroid_x = (c0[0] + c1[0] + c2[0]) / 3.
+        centroid_y = (c0[1] + c1[1] + c2[1]) / 3.
+        centroid_z = (c0[2] + c1[2] + c2[2]) / 3.
 
-    def check(self, c, theta, phi):
+        v0 = c1 - c0
+        v1 = c2 - c0
+        direction = np.cross(v0.T, v1.T)
+        normal = direction / np.linalg.norm(direction)
+
+        return ((c0, c1, c2),
+               (centroid_x, centroid_y, centroid_z),
+               normal)
+
+    def is_valid(self, c, theta, phi):
         dist01 = np.linalg.norm(c[0] - c[1])
         dist12 = np.linalg.norm(c[1] - c[2])
         dist20 = np.linalg.norm(c[2] - c[0])
@@ -91,8 +102,10 @@ class KinematicModel(object):
         print np.array(theta)*180./np.pi
         print np.array(phi)*180./np.pi
 
+        return true
+
 if __name__ == "__main__":
-    l, m, s = 1, 1, 1
+    l, m, s = 1, 1, 1.414
     d30 = 30. * pi / 180.
     A0 = Matrix([[0], [-2], [0]])
     A1 = Matrix([[2*cos(d30)], [2*sin(d30)], [0]])
@@ -101,6 +114,6 @@ if __name__ == "__main__":
 
     theta = [0, 0, 0]
     phi = km.solve_phi(theta)
-    c = km.c_for(theta, phi)
+    c, centroid, normal = km.state_for(theta, phi)
 
-    km.check(c, theta, phi)
+    km.is_valid(c, theta, phi)
