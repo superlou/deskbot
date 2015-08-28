@@ -19,9 +19,9 @@ if __name__ == "__main__":
     ds = SupervisedDataSet(3, 3)
 
     for i, row in df.iterrows():
-        theta = (row.theta0, row.theta1, row.theta2)
-        phi = (row.phi0, row.phi1, row.phi2)
-        ds.addSample(theta, phi)
+        training_input = (row.normal_x, row.normal_y, row.centroid_z)
+        training_output = (row.theta0, row.theta1, row.theta2)
+        ds.addSample(training_input, training_output)
 
     trainer = BackpropTrainer(net, ds)
     for i in range(1000):

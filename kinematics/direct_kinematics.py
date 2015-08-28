@@ -15,7 +15,13 @@ if __name__ == "__main__":
 
     with open('training.csv', 'w') as training:
         writer = csv.writer(training)
-        writer.writerow(['theta0', 'theta1', 'theta2', 'phi0', 'phi1', 'phi2'])
+        writer.writerow([
+            'theta0', 'theta1', 'theta2',
+            'phi0', 'phi1', 'phi2',
+            'centroid_x', 'centroid_y', 'centroid_z',
+            'normal_x', 'normal_y', 'normal_z',
+            'yaw', 'pitch'
+        ])
 
         i = 0
 
@@ -23,7 +29,15 @@ if __name__ == "__main__":
             try:
                 theta = np.random.rand(3) - 0.5
                 phi = km.solve_phi(theta)
-                writer.writerow(np.hstack((theta, phi.T)))
+                c, centroid, normal = km.state_for(theta, phi)
+                row = np.hstack((
+                    theta,
+                    phi.T,
+                    np.array(centroid),
+                    normal.T,
+                    np.array([yaw, pitch])
+                ))
+                writer.writerow(row)
 
                 i = i + 1
                 print("{0} training points".format(i))

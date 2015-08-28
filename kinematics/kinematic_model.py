@@ -1,5 +1,6 @@
 from sympy import *
 import numpy as np
+from plot_model import plot_model
 
 
 class KinematicModel(object):
@@ -14,15 +15,15 @@ class KinematicModel(object):
         self.m = m
         self.s = s
 
-        self.theta0, self.phi0, self.C0 = self.construct_arm(
+        self.theta0, self.phi0, self.B0, self.C0 = self.construct_arm(
             0, self.gamma0, self.A0, self.l, self.m
         )
 
-        self.theta1, self.phi1, self.C1 = self.construct_arm(
+        self.theta1, self.phi1, self.B1, self.C1 = self.construct_arm(
             1, self.gamma1, self.A1, self.l, self.m
         )
 
-        self.theta2, self.phi2, self.C2 = self.construct_arm(
+        self.theta2, self.phi2, self.B2, self.C2 = self.construct_arm(
             2, self.gamma2, self.A2, self.l, self.m
         )
 
@@ -30,6 +31,12 @@ class KinematicModel(object):
 
     def construct_arm(self, id, gamma, A, l, m):
         theta, phi = symbols("theta{0} phi{0}".format(id))
+
+        B = Matrix([
+            [l * cos(theta)],
+            [0],
+            [l * sin(theta)]
+        ])
 
         C = Matrix([
             [l * cos(theta) + m * cos(phi)],
@@ -43,7 +50,7 @@ class KinematicModel(object):
             [0, 0, 1]
         ])
 
-        return theta, phi, z_rot * C + A
+        return theta, phi, z_rot * B + A, z_rot * C + A
 
     def prepare_to_solve(self):
         leg0 = self.C1 - self.C0
@@ -75,6 +82,10 @@ class KinematicModel(object):
         return np.array(solution)
 
     def state_for(self, theta, phi):
+        b0 = lambdify((self.theta0), self.B0)(theta[0])
+        b1 = lambdify((self.theta1), self.B1)(theta[1])
+        b2 = lambdify((self.theta2), self.B2)(theta[2])
+
         """Determine locations of C0, C1, and C2 given thetas and phis"""
         c0 = lambdify((self.theta0, self.phi0), self.C0)(theta[0], phi[0])
         c1 = lambdify((self.theta1, self.phi1), self.C1)(theta[1], phi[1])
@@ -83,24 +94,44 @@ class KinematicModel(object):
         centroid_x = (c0[0] + c1[0] + c2[0]) / 3.
         centroid_y = (c0[1] + c1[1] + c2[1]) / 3.
         centroid_z = (c0[2] + c1[2] + c2[2]) / 3.
+        centroid = np.array([centroid_x, centroid_y, centroid_z]).squeeze().astype(float)
 
         v0 = c1 - c0
         v1 = c2 - c0
         direction = np.cross(v0.T, v1.T)
-        normal = direction / np.linalg.norm(direction)
+        normal = (direction / np.linalg.norm(direction)).squeeze()
+        normal[abs(normal) < 1e-8] = 0.0
 
-        return ((c0, c1, c2),
-               (centroid_x, centroid_y, centroid_z),
-               normal)
+        if normal[1] != 0:
+            yaw = np.arctan(normal[0]/(-normal[1]))
+        else:
+            yaw = 0.0
 
-    def is_valid(self, c, theta, phi):
+        pitch = np.arctan(np.sqrt(normal[0]**2) + (normal[1]**2) / normal[2])
+
+        return (self.A0, self.A1, self.A2), (b0, b1, b2), (c0, c1, c2),\
+            centroid, normal, yaw, pitch
+
+    def is_valid(self, b, c, theta, phi):
         dist01 = np.linalg.norm(c[0] - c[1])
         dist12 = np.linalg.norm(c[1] - c[2])
         dist20 = np.linalg.norm(c[2] - c[0])
 
-        print dist01, dist12, dist20
-        print np.array(theta)*180./np.pi
-        print np.array(phi)*180./np.pi
+        tolerance = 0.00001
+
+        for dist in [dist01, dist12, dist20]:
+            if abs(dist - self.s) > tolerance:
+                return false
+
+        for angle in theta:
+            if angle > (90 * np.pi / 180):
+                return false
+            elif angle < (-90 * np.pi / 180):
+                return false
+
+        for angle in phi:
+            if angle < 0:
+                return false
 
         return true
 
@@ -114,6 +145,8 @@ if __name__ == "__main__":
 
     theta = [0, 0, 0]
     phi = km.solve_phi(theta)
-    c, centroid, normal = km.state_for(theta, phi)
+    a, b, c, centroid, normal, yaw, pitch = km.state_for(theta, phi)
 
-    km.is_valid(c, theta, phi)
+    print "State is valid?", km.is_valid(b, c, theta, phi)
+
+    plot_model(a, b, c)
