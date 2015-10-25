@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
 
 
 def plot_model(a, b, c):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
     for start, finish in zip(a, b):
         ax.scatter([start[0], finish[0]],
                 [start[1], finish[1]],
