@@ -1,6 +1,7 @@
 from sympy import *
 import numpy as np
 from plot_model import plot_model
+import cProfile as profile
 
 
 class KinematicModel(object):
@@ -144,7 +145,7 @@ if __name__ == "__main__":
     km = KinematicModel(A0, A1, A2, pi/2., pi+d30, -d30, l, m, s)
 
     theta = [0, 0, 0]
-    phi = km.solve_phi(theta)
+    profile.run("phi = km.solve_phi(theta)")
     a, b, c, centroid, normal, yaw, pitch = km.state_for(theta, phi)
 
     print "State is valid?", km.is_valid(b, c, theta, phi)
