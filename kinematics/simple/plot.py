@@ -12,6 +12,7 @@ def change(param, changes, deskbot_model, view):
         name = param.name()
 
         alpha = dm.alpha
+        alpha_h = dm.alpha_h
 
         if name == "0":
             alpha[0] = data * np.pi / 180
@@ -19,10 +20,12 @@ def change(param, changes, deskbot_model, view):
             alpha[1] = data * np.pi / 180
         elif name == "2":
             alpha[2] = data * np.pi / 180
+        elif name == "h":
+            alpha_h = data * np.pi / 180
 
-        dm.solve(alpha)
+        dm.solve(alpha, alpha_h)
         clear_items(view)
-        create_items(view, dm.b, dm.k, dm.p)
+        create_items(view, dm.b, dm.k, dm.p, dm.p_c, dm.h_c, dm.e_p)
 
 
 def clear_items(view):
@@ -30,16 +33,24 @@ def clear_items(view):
         view.removeItem(item)
 
 
-def create_items(view, base_points, knee_points, platform_points):
+def create_items(view, base_points, knee_points, platform_points,
+                 platform_centroid, head_centroid, eye_point):
     zgrid = gl.GLGridItem()
     view.addItem(zgrid)
 
     base_points_item = gl.GLScatterPlotItem(pos=base_points.T)
     knee_points_item = gl.GLScatterPlotItem(pos=knee_points.T)
     platform_points_item = gl.GLScatterPlotItem(pos=platform_points.T)
+    platform_centroid_item = gl.GLScatterPlotItem(pos=platform_centroid)
+    head_centroid_item = gl.GLScatterPlotItem(pos=head_centroid)
+    eye_point_item = gl.GLScatterPlotItem(pos=eye_point)
+
     view.addItem(base_points_item)
     view.addItem(knee_points_item)
     view.addItem(platform_points_item)
+    view.addItem(platform_centroid_item)
+    view.addItem(head_centroid_item)
+    view.addItem(eye_point_item)
 
     platform_meshdata = gl.MeshData(
         vertexes=platform_points.T,
@@ -70,16 +81,17 @@ if __name__ == "__main__":
         r_b=[2, 2, 2],
         l=[1, 1, 1],
         m=[1, 1, 1],
-        d=[1.414, 1.414, 1.414]
+        d=[1.414, 1.414, 1.414],
+        h=0.5
     )
 
-    dm.solve(np.array([0, 0, 0]) * np.pi / 180)
+    dm.solve(np.array([0, 0, 0]) * np.pi / 180, 0 * np.pi / 180)
 
     pg.mkQApp()
     glViewWidget = gl.GLViewWidget()
     plotDock.addWidget(glViewWidget)
 
-    create_items(glViewWidget, dm.b, dm.k, dm.p)
+    create_items(glViewWidget, dm.b, dm.k, dm.p, dm.p_c, dm.h_c, dm.e_p)
 
     # Create parameter tree
     tree = ParameterTree()
@@ -88,7 +100,8 @@ if __name__ == "__main__":
         {'name': 'Servo positions', 'type': 'group', 'children': [
             {'name': '0', 'type': 'float', 'value': 0},
             {'name': '1', 'type': 'float', 'value': 0},
-            {'name': '2', 'type': 'float', 'value': 0}
+            {'name': '2', 'type': 'float', 'value': 0},
+            {'name': 'h', 'type': 'float', 'value': 0}
         ]}
     ]
 

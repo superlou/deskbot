@@ -5,10 +5,11 @@ import cProfile as profile
 
 
 class DeskbotModel(object):
-    def __init__(self, theta_b, r_b, l, m, d):
+    def __init__(self, theta_b, r_b, l, m, d, h):
         self.theta_b = np.array(theta_b)
         self.r_b = np.array(r_b)
         self.d = np.array(d)
+        self.h = h
 
         # Determine position of base points
         self.b = np.array([
@@ -24,8 +25,9 @@ class DeskbotModel(object):
         self.k = np.zeros(3)
         self.p = np.zeros(3)
 
-    def solve(self, alpha):
+    def solve(self, alpha, alpha_h):
         self.alpha = np.array(alpha)
+        self.alpha_h = alpha_h
 
         # Determine positions of knee points
         self.k = np.array([
@@ -43,7 +45,42 @@ class DeskbotModel(object):
             self.k[2] + self.m * np.sin(gamma),
         ])
 
+        # Determine position of head centroid above platform
+        p_c = np.average(self.p, axis=1)        # platform centroid
+        self.p_c = p_c
+
+        p01 = self.p[:, 1] - self.p[:, 0]
+        p02 = self.p[:, 2] - self.p[:, 0]
+
+        p_v = np.cross(p01, p02)
+        p_v = p_v / np.linalg.norm(p_v)         # platform normal vecto
+
+        h_c = self.h * p_v + self.p_c           # center of head
+        self.h_c = h_c
+
+        # Determine head vectors
+        h_v = self.p[:, 0] - p_c
+        h_v = h_v / np.linalg.norm(h_v)
+
+        h_v = self.rotate_vector(h_v, p_v, alpha_h)
+        self.h_v = h_v                          # eye line vector
+
+        e_p = h_v + h_c
+        self.e_p = e_p
+
         return gamma
+
+    def rotate_vector(self, vector, axis, angle):
+        """
+        Uses Rodrigues rotation formula
+        axis must be a normal vector
+        """
+        k = axis
+        v = vector
+        v_rot = (v * np.cos(angle) + np.cross(k, v) * np.sin(angle) +
+                 k * (k * v) * (1 - np.cos(angle)))
+
+        return v_rot
 
     def errors(self, p):
         gamma_0, gamma_1, gamma_2 = p
@@ -73,11 +110,13 @@ if __name__ == "__main__":
         r_b=[2, 2, 2],
         l=[1, 1, 1],
         m=[1, 1, 1],
-        d=[1.414, 1.414, 1.414]
+        d=[1.414, 1.414, 1.414],
+        h=0.5
     )
 
-    dm.solve(np.array([0, 0, 0]) * np.pi / 180)
+    dm.solve(np.array([0, 0, 0]) * np.pi / 180, 0 * np.pi / 180)
 
     print "Base:\n", dm.b
     print "Knees:\n", dm.k
     print "Platform:\n", dm.p
+    print "Head vector:", dm.h_v
