@@ -2,6 +2,7 @@ import numpy as np
 from numpy import radians, degrees
 import scipy as sp
 import scipy.optimize as optimize
+import cProfile as profile
 
 
 def rotate_vector(vector, axis, angle):
@@ -45,7 +46,11 @@ class PlatformIK(object):
         n_v = n_v / np.linalg.norm(n_v)
         self.n_v = n_v
 
-        x = optimize.fsolve(self.errors, [radians(0), 0, 0, self.h])
+        theta_init = np.arctan2(e_v[1], e_v[0])
+        pz_init = self.h - self.n
+
+        x = optimize.fsolve(self.errors, [theta_init, 0, 0, pz_init])
+
         theta = x[0]
         platform_centroid = np.array([x[1], x[2], x[3]])
 
@@ -90,14 +95,14 @@ if __name__ == "__main__":
     e_v = rotate_vector(e_v, gz_v, radians(0))
     f_v = rotate_vector(f_v, gz_v, radians(0))
 
-    e_v = rotate_vector(e_v, gy_v, radians(-20))
-    f_v = rotate_vector(f_v, gy_v, radians(-20))
+    e_v = rotate_vector(e_v, gy_v, radians(-10))
+    f_v = rotate_vector(f_v, gy_v, radians(-10))
 
-    e_v = rotate_vector(e_v, gx_v, radians(-40))
-    f_v = rotate_vector(f_v, gx_v, radians(-40))
+    e_v = rotate_vector(e_v, gx_v, radians(-10))
+    f_v = rotate_vector(f_v, gx_v, radians(-10))
 
     pik = PlatformIK(l=1, n=0.1)
-    theta, centroid, points = pik.solve(e_v, f_v, 1)
+    profile.run("theta, centroid, points = pik.solve(e_v, f_v, 1)")
 
     print "Solution:"
     print "theta:", degrees(theta)
