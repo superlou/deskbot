@@ -32,52 +32,49 @@ def point_line_distance(point, line_slope):
 
 
 class PlatformIK(object):
-    def __init__(self, l):
+    def __init__(self, l, n):
         self.l = l
+        self.n = n
 
     def solve(self, e_v, f_v, h):
         self.e_v = e_v
         self.f_v = f_v
         self.h = h
 
-        x = optimize.fsolve(self.errors, [radians(0), 0, 0, self.h])
+        n_v = np.cross(e_v, f_v)
+        n_v = n_v / np.linalg.norm(n_v)
+        self.n_v = n_v
 
-        return x
+        x = optimize.fsolve(self.errors, [radians(0), 0, 0, self.h])
+        theta = x[0]
+        platform_centroid = np.array([x[1], x[2], x[3]])
+
+        return theta, platform_centroid, self.platform_points
 
     def errors(self, x):
         e_v = self.e_v
         f_v = self.f_v
+        n_v = self.n_v
 
         theta, px, py, pz = x
-        # print "x:", x
-
-        n_v = np.cross(e_v, f_v)
-        n_v = n_v / np.linalg.norm(n_v)
-        # print "n_v", n_v
 
         p0_v = rotate_vector(e_v, n_v, -theta)
         p1_v = rotate_vector(p0_v, n_v, radians(120))
         p2_v = rotate_vector(p0_v, n_v, radians(240))
-
-        # print "cross:", np.dot(p0_v, n_v)
-        # print "vectors"
-        # print p0_v, p1_v, p2_v
 
         pc = np.array([px, py, pz])
         p0 = self.l * p0_v + pc
         p1 = self.l * p1_v + pc
         p2 = self.l * p2_v + pc
 
-        self.p = np.array([p0, p1, p2]).T
+        n_p = pc + self.n * n_v
 
-        # print "p1 error:", point_line_distance(p1, np.tan(radians(-60)))
-        # print "pz error:", pz - self.h
-        # print p2_v
+        self.platform_points = np.array([p0, p1, p2]).T
 
         return (point_line_distance(p0, 0),
                 point_line_distance(p1, np.tan(radians(-60))),
                 point_line_distance(p2, np.tan(radians(60))),
-                pz - self.h)
+                n_p[2] - self.h)
 
 
 if __name__ == "__main__":
@@ -90,20 +87,20 @@ if __name__ == "__main__":
     e_v = np.array([1, 0, 0])
     f_v = np.array([0, 1, 0])
 
-    e_v = rotate_vector(e_v, gz_v, radians(10))
-    f_v = rotate_vector(f_v, gz_v, radians(10))
+    e_v = rotate_vector(e_v, gz_v, radians(0))
+    f_v = rotate_vector(f_v, gz_v, radians(0))
 
     e_v = rotate_vector(e_v, gy_v, radians(-20))
     f_v = rotate_vector(f_v, gy_v, radians(-20))
 
-    e_v = rotate_vector(e_v, gx_v, radians(-20))
-    f_v = rotate_vector(f_v, gx_v, radians(-20))
+    e_v = rotate_vector(e_v, gx_v, radians(-40))
+    f_v = rotate_vector(f_v, gx_v, radians(-40))
 
-    pik = PlatformIK(l=1)
-    x = pik.solve(e_v, f_v, 1)
+    pik = PlatformIK(l=1, n=0.1)
+    theta, centroid, points = pik.solve(e_v, f_v, 1)
 
     print "Solution:"
-    print "theta:", degrees(x[0])
-    print "p_c:", [x[1], x[2], x[3]]
+    print "theta:", degrees(theta)
+    print "p_c:", centroid
     print "p:"
-    print pik.p
+    print points

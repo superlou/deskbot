@@ -51,7 +51,7 @@ def create_items(view, platform_ik):
     zgrid = gl.GLGridItem()
     view.addItem(zgrid)
 
-    platform_points = platform_ik.p
+    platform_points = platform_ik.platform_points
     platform_points_item = gl.GLScatterPlotItem(pos=platform_points.T)
     view.addItem(platform_points_item)
 
@@ -86,8 +86,8 @@ if __name__ == "__main__":
     e_v = np.array([1, 0, 0])
     f_v = np.array([0, 1, 0])
 
-    e_v = rotate_vector(e_v, gz_v, radians(-10))
-    f_v = rotate_vector(f_v, gz_v, radians(-10))
+    e_v = rotate_vector(e_v, gz_v, radians(0))
+    f_v = rotate_vector(f_v, gz_v, radians(0))
 
     e_v = rotate_vector(e_v, gy_v, radians(-20))
     f_v = rotate_vector(f_v, gy_v, radians(-20))
@@ -95,8 +95,8 @@ if __name__ == "__main__":
     e_v = rotate_vector(e_v, gx_v, radians(-20))
     f_v = rotate_vector(f_v, gx_v, radians(-20))
 
-    pik = PlatformIK(l=1)
-    x = pik.solve(e_v, f_v, 1)
+    pik = PlatformIK(l=1, n=0.1)
+    pik.solve(e_v, f_v, 1)
 
     pg.mkQApp()
     glViewWidget = gl.GLViewWidget()
