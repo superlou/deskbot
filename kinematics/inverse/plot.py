@@ -55,6 +55,15 @@ def create_items(view, platform_ik):
     platform_points_item = gl.GLScatterPlotItem(pos=platform_points.T)
     view.addItem(platform_points_item)
 
+    item = gl.GLScatterPlotItem(pos=platform_ik.p_c)
+    view.addItem(item)
+
+    item = gl.GLScatterPlotItem(pos=platform_ik.n_p)
+    view.addItem(item)
+
+    item = gl.GLScatterPlotItem(pos=platform_ik.e_p)
+    view.addItem(item)
+
     platform_meshdata = gl.MeshData(
         vertexes=platform_points.T,
         faces=np.array([[0, 1, 2]])

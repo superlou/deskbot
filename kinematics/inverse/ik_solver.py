@@ -53,6 +53,7 @@ class PlatformIK(object):
 
         theta = x[0]
         platform_centroid = np.array([x[1], x[2], x[3]])
+        self.p_c = platform_centroid
 
         return theta, platform_centroid, self.platform_points
 
@@ -73,6 +74,8 @@ class PlatformIK(object):
         p2 = self.l * p2_v + pc
 
         n_p = pc + self.n * n_v
+        self.n_p = n_p
+        self.e_p = n_p + e_v
 
         self.platform_points = np.array([p0, p1, p2]).T
 
