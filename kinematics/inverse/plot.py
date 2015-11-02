@@ -5,7 +5,7 @@ from numpy import radians, degrees
 from pyqtgraph.Qt import QtCore, QtGui
 from pyqtgraph.dockarea import *
 from pyqtgraph.parametertree import *
-from ik_solver import PlatformIK
+from platform_ik import PlatformIK
 
 
 # def change(param, changes, deskbot_model, view):
