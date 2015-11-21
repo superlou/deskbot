@@ -104,6 +104,10 @@ if __name__ == "__main__":
             e_v, f_v = roll_local(e_v, f_v, np.radians(-2))
         elif key == ord("d"):
             e_v, f_v = roll_local(e_v, f_v, np.radians(2))
+        elif key == ord(" "):
+            e_v = np.array([1, 0, 0])
+            f_v = np.array([0, 1, 0])
+            height = 5
 
         solve_servos(pbs, full_ik, e_v, f_v, height)
 
