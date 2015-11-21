@@ -3,20 +3,8 @@ import numpy as np
 from pi_blaster_servos import PiBlasterServos
 from servo import Servo
 from kinematics.inverse.full_ik import FullIK
+from kinematics.utilities import rotate_vector
 import curses
-
-
-def rotate_vector(vector, axis, angle):
-    """
-    Uses Rodrigues rotation formula
-    axis must be a normal vector
-    """
-    k = axis
-    v = vector
-    v_rot = (v * np.cos(angle) + np.cross(k, v) * np.sin(angle) +
-             k * (np.dot(k, v)) * (1 - np.cos(angle)))
-
-    return v_rot
 
 
 def reset_servos(pbs):
