@@ -1,0 +1,11 @@
+MANIFEST.in
+README.rst
+setup.cfg
+singledispatch.py
+singledispatch_helpers.py
+pip-egg-info/singledispatch.egg-info/PKG-INFO
+pip-egg-info/singledispatch.egg-info/SOURCES.txt
+pip-egg-info/singledispatch.egg-info/dependency_links.txt
+pip-egg-info/singledispatch.egg-info/requires.txt
+pip-egg-info/singledispatch.egg-info/top_level.txt
+pip-egg-info/singledispatch.egg-info/zip-safe

@@ -4,7 +4,23 @@ import scipy as sp
 import scipy.optimize as optimize
 import cProfile as profile
 import math
-from ..utilities import rotate_vector
+# from ..utilities import rotate_vector
+import pyximport
+pyximport.install()
+from utilities import rotate_vector_fast
+
+
+def rotate_vector(vector, axis, angle):
+    """
+    Uses Rodrigues rotation formula
+    axis must be a normal vector
+    """
+    k = axis
+    v = vector
+    v_rot = (v * np.cos(angle) + np.cross(k, v) * np.sin(angle) +
+             k * (np.dot(k, v)) * (1 - np.cos(angle)))
+
+    return v_rot
 
 
 def rotation_matrix(axis, theta):
@@ -24,6 +40,7 @@ def rotation_matrix(axis, theta):
     bc, ad, ac, ab, bd, cd = b*c, a*d, a*c, a*b, b*d, c*d
     return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
                      [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
+
                      [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
 
 
@@ -82,7 +99,7 @@ class PlatformIK(object):
 
         # Because n_v is fixed, after finding p0, a precomputed
         # rotation matrix can be used to find p1 and p2.
-        p0_v = rotate_vector(self.l * e_v, n_v, -theta)
+        p0_v = rotate_vector_fast(self.l * e_v, n_v, -theta)
         p1_v = np.dot(rot_mat, p0_v)
         p2_v = np.dot(rot_mat, p1_v)
 
