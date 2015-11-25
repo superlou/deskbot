@@ -1,3 +1,4 @@
+import cython
 import numpy as np
 cimport numpy as np
 
@@ -5,6 +6,8 @@ cimport numpy as np
 cdef extern from "math.h":
     double sin(double x)
     double cos(double x)
+    double sqrt(double x)
+    double abs(double x)
 
 
 def rotate_vector_fast(np.ndarray[np.float64_t, ndim=1] vector,
@@ -74,3 +77,18 @@ cdef void add3v(np.float64_t* accum, np.float64_t* delta):
     accum[0] = accum[0] + delta[0]
     accum[1] = accum[1] + delta[1]
     accum[2] = accum[2] + delta[2]
+
+
+@cython.cdivision(True)
+def point_line_distance_fast(np.float64_t[:] point, np.float64_t line_slope):
+  """
+  Based on https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+  Assumes line passes through zero
+  Let b = 1
+  """
+  cdef np.float64_t x0 = point[0]
+  cdef np.float64_t y0 = point[1]
+  cdef np.float64_t a = -1 * line_slope
+
+  cdef np.float64_t distance = abs(a * x0 + y0) / sqrt(a * a + 1.0)
+  return distance

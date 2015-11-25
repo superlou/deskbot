@@ -7,7 +7,7 @@ import math
 # from ..utilities import rotate_vector
 import pyximport
 pyximport.install()
-from utilities import rotate_vector_fast
+from utilities import rotate_vector_fast, point_line_distance_fast
 
 
 def rotate_vector(vector, axis, angle):
@@ -27,9 +27,9 @@ def rotation_matrix(axis, theta):
     """
     From http://stackoverflow.com/questions/6802577/python-rotation-of-3d-vector
 
-    Calculating the rotation matrix and applying it to the vector is slower than
-    the rotate_vector function, but simply applying a precalculated rotation
-    matrix is much faster.
+    Calculating the rotation matrix and applying it to the vector is slower
+    than the rotate_vector function, but simply applying a precalculated
+    rotation matrix is much faster.
     """
     axis = np.asarray(axis)
     theta = np.asarray(theta)
@@ -82,24 +82,37 @@ class PlatformIK(object):
 
         rot_mat = rotation_matrix(n_v, radians(120))
         tan60 = np.tan(radians(60))
-        x = optimize.fsolve(self.errors, estimate, args=(rot_mat, tan60))
+        x = optimize.fsolve(self.errors, estimate, args=(
+            rot_mat, tan60, e_v, n_v, self.h, self.l, self.n
+        ))
 
         theta = x[0]
         self.theta = theta
         platform_centroid = np.array([x[1], x[2], x[3]])
         self.p_c = platform_centroid
 
+        self.n_p = self.p_c + self.n * n_v
+        self.e_p = self.n_p + self.e_v
+
+        # If necessary, these points are calculated like they
+        # are in the errors function.
+        p0_v = rotate_vector_fast(self.l * self.e_v, self.n_v, -self.theta)
+        p1_v = np.dot(rot_mat, p0_v)
+        p2_v = np.dot(rot_mat, p1_v)
+        p0 = p0_v + self.p_c
+        p1 = p1_v + self.p_c
+        p2 = p2_v + self.p_c
+
+        self.platform_points = np.array([p0, p1, p2]).T
+
         return theta, platform_centroid, self.platform_points
 
-    def errors(self, x, rot_mat, tan60):
-        e_v = self.e_v
-        n_v = self.n_v
-
+    def errors(self, x, rot_mat, tan60, e_v, n_v, h, l, n):
         theta, px, py, pz = x
 
         # Because n_v is fixed, after finding p0, a precomputed
         # rotation matrix can be used to find p1 and p2.
-        p0_v = rotate_vector_fast(self.l * e_v, n_v, -theta)
+        p0_v = rotate_vector_fast(l * e_v, n_v, -theta)
         p1_v = np.dot(rot_mat, p0_v)
         p2_v = np.dot(rot_mat, p1_v)
 
@@ -108,16 +121,12 @@ class PlatformIK(object):
         p1 = p1_v + pc
         p2 = p2_v + pc
 
-        n_p = pc + self.n * n_v
-        self.n_p = n_p
-        self.e_p = n_p + e_v
+        n_p = pc + n * n_v
 
-        self.platform_points = np.array([p0, p1, p2]).T
-
-        return (point_line_distance(p0, 0),
-                point_line_distance(p1, -tan60),
-                point_line_distance(p2, tan60),
-                n_p[2] - self.h)
+        return (point_line_distance_fast(p0, 0),
+                point_line_distance_fast(p1, -tan60),
+                point_line_distance_fast(p2, tan60),
+                n_p[2] - h)
 
 
 if __name__ == "__main__":
@@ -140,7 +149,7 @@ if __name__ == "__main__":
     f_v = rotate_vector(f_v, gx_v, radians(-10))
 
     pik = PlatformIK(l=1, n=0.1)
-    profile.run("theta, centroid, points = pik.solve(e_v, f_v, 1)")
+    profile.run("for i in range(1000): theta, centroid, points = pik.solve(e_v, f_v, 1)")
 
     print "Solution:"
     print "theta:", degrees(theta)
