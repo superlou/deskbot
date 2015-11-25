@@ -80,6 +80,8 @@ cdef void add3v(np.float64_t* accum, np.float64_t* delta):
 
 
 @cython.cdivision(True)
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def point_line_distance_fast(np.float64_t[:] point, np.float64_t line_slope):
   """
   Based on https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
