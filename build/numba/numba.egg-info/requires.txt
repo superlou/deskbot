@@ -1,5 +1,0 @@
-llvmlite
-numpy
-enum34
-singledispatch
-funcsigs
