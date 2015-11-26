@@ -24,3 +24,5 @@ For scipy:
     sudo apt-get install python-scipy # not up-to-date, but installs much faster
 
 Run Servo IK test with `python -m code.servo_test_ik`.
+
+Need a relatively recent install of cython (which takes a long time to build via `pip`).  Required increase swap size per http://raspberrypi.stackexchange.com/questions/70/how-to-set-up-swap-space.
