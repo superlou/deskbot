@@ -1,0 +1,255 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:breakout
+LIBS:breakout-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 1 1
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L RPI_HEADER P1
+U 1 1 56DCE2CB
+P 5800 3850
+F 0 "P1" H 4950 5000 60  0000 C CNN
+F 1 "RPI_HEADER" H 5150 2800 60  0000 C CNN
+F 2 "" H 5200 4200 60  0000 C CNN
+F 3 "" H 5200 4200 60  0000 C CNN
+	1    5800 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X03 P2
+U 1 1 56DCE460
+P 9450 2850
+F 0 "P2" H 9450 3050 50  0000 C CNN
+F 1 "CONN_01X03" V 9550 2850 50  0000 C CNN
+F 2 "" H 9450 2850 50  0000 C CNN
+F 3 "" H 9450 2850 50  0000 C CNN
+	1    9450 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X03 P3
+U 1 1 56DCE5DB
+P 9450 3550
+F 0 "P3" H 9450 3750 50  0000 C CNN
+F 1 "CONN_01X03" V 9550 3550 50  0000 C CNN
+F 2 "" H 9450 3550 50  0000 C CNN
+F 3 "" H 9450 3550 50  0000 C CNN
+	1    9450 3550
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X03 P4
+U 1 1 56DCE629
+P 9450 4200
+F 0 "P4" H 9450 4400 50  0000 C CNN
+F 1 "CONN_01X03" V 9550 4200 50  0000 C CNN
+F 2 "" H 9450 4200 50  0000 C CNN
+F 3 "" H 9450 4200 50  0000 C CNN
+	1    9450 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X03 P5
+U 1 1 56DCE661
+P 9450 4750
+F 0 "P5" H 9450 4950 50  0000 C CNN
+F 1 "CONN_01X03" V 9550 4750 50  0000 C CNN
+F 2 "" H 9450 4750 50  0000 C CNN
+F 3 "" H 9450 4750 50  0000 C CNN
+	1    9450 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR01
+U 1 1 56DCE6FF
+P 9100 4950
+F 0 "#PWR01" H 9100 4700 50  0001 C CNN
+F 1 "GND" H 9100 4800 50  0000 C CNN
+F 2 "" H 9100 4950 50  0000 C CNN
+F 3 "" H 9100 4950 50  0000 C CNN
+	1    9100 4950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9250 2950 9100 2950
+Wire Wire Line
+	9100 2950 9100 3650
+Wire Wire Line
+	9100 3650 9100 4300
+Wire Wire Line
+	9100 4300 9100 4850
+Wire Wire Line
+	9100 4850 9100 4950
+Wire Wire Line
+	9250 4850 9100 4850
+Connection ~ 9100 4850
+Wire Wire Line
+	9250 4300 9100 4300
+Connection ~ 9100 4300
+Wire Wire Line
+	9250 3650 9100 3650
+Connection ~ 9100 3650
+$Comp
+L VCC #PWR02
+U 1 1 56DCE883
+P 9000 2650
+F 0 "#PWR02" H 9000 2500 50  0001 C CNN
+F 1 "VCC" H 9000 2800 50  0000 C CNN
+F 2 "" H 9000 2650 50  0000 C CNN
+F 3 "" H 9000 2650 50  0000 C CNN
+	1    9000 2650
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9000 4750 9250 4750
+Wire Wire Line
+	9000 4200 9250 4200
+Connection ~ 9000 4200
+Wire Wire Line
+	9000 3550 9250 3550
+Connection ~ 9000 3550
+Wire Wire Line
+	9250 2850 9000 2850
+Connection ~ 9000 2850
+Wire Wire Line
+	8000 2750 9250 2750
+Wire Wire Line
+	8100 3450 9250 3450
+Wire Wire Line
+	8100 4100 9250 4100
+Wire Wire Line
+	8000 4650 9250 4650
+Text Label 7200 3350 0    60   ~ 0
+SERVO_0
+Text Label 7200 3550 0    60   ~ 0
+SERVO_1
+Text Label 7200 3650 0    60   ~ 0
+SERVO_2
+Text Label 7200 3850 0    60   ~ 0
+SERVO_3
+$Comp
+L GND #PWR03
+U 1 1 56DCEC81
+P 4550 4850
+F 0 "#PWR03" H 4550 4600 50  0001 C CNN
+F 1 "GND" H 4550 4700 50  0000 C CNN
+F 2 "" H 4550 4850 50  0000 C CNN
+F 3 "" H 4550 4850 50  0000 C CNN
+	1    4550 4850
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4550 4050 4550 4750
+Wire Wire Line
+	4550 4750 4550 4850
+Wire Wire Line
+	4550 4050 4700 4050
+Wire Wire Line
+	4700 4750 4550 4750
+Connection ~ 4550 4750
+Wire Wire Line
+	6900 3350 8000 3350
+Wire Wire Line
+	8000 3350 8000 2750
+Wire Wire Line
+	8100 3450 8100 3550
+Wire Wire Line
+	8100 3550 6900 3550
+Wire Wire Line
+	6900 3650 8100 3650
+Wire Wire Line
+	8100 3650 8100 4100
+Wire Wire Line
+	8000 4650 8000 3850
+Wire Wire Line
+	8000 3850 6900 3850
+$Comp
+L CONN_01X02 P6
+U 1 1 56DCF131
+P 2800 3250
+F 0 "P6" H 2800 3400 50  0000 C CNN
+F 1 "CONN_01X02" V 2900 3250 50  0000 C CNN
+F 2 "" H 2800 3250 50  0000 C CNN
+F 3 "" H 2800 3250 50  0000 C CNN
+	1    2800 3250
+	-1   0    0    -1  
+$EndComp
+$Comp
+L GND #PWR04
+U 1 1 56DCF461
+P 3100 3400
+F 0 "#PWR04" H 3100 3150 50  0001 C CNN
+F 1 "GND" H 3100 3250 50  0000 C CNN
+F 2 "" H 3100 3400 50  0000 C CNN
+F 3 "" H 3100 3400 50  0000 C CNN
+	1    3100 3400
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 3300 3100 3300
+Wire Wire Line
+	3100 3300 3100 3400
+Wire Wire Line
+	9000 2650 9000 2850
+Wire Wire Line
+	9000 2850 9000 3550
+Wire Wire Line
+	9000 3550 9000 4200
+Wire Wire Line
+	9000 4200 9000 4750
+$Comp
+L VCC #PWR?
+U 1 1 56DCFF8A
+P 3100 3100
+F 0 "#PWR?" H 3100 2950 50  0001 C CNN
+F 1 "VCC" H 3100 3250 50  0000 C CNN
+F 2 "" H 3100 3100 50  0000 C CNN
+F 3 "" H 3100 3100 50  0000 C CNN
+	1    3100 3100
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3100 3100 3100 3200
+Wire Wire Line
+	3100 3200 3000 3200
+$EndSCHEMATC

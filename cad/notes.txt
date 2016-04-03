@@ -1,0 +1,14 @@
+Servo mounting screws: https://www.servocity.com/html/mounting_screws.html
+Length: 0.575" - measure directly under the head of the fastener (measures how much is inset in the material)
+Screw diameter: 0.087"
+Head diameter: 0.235"
+
+
+https://www.boltdepot.com/fastener-information/Measuring/Measure-Diameter.aspx
+
+Measuring the ones included with the HS-311 kit:
+Thread (major) diameter: 0.088, Shank Diameter: 0.082, Root (minor) Diameter: ~0.050
+
+https://www.boltdepot.com/fastener-information/Wood-Screws/Wood-Screw-Diameter.aspx
+
+It's probably 9/16" length, #2 size wood screw.  Hole should be at least 0.600" deep, 1/16" straight bit 0.062" diameter.
