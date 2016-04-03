@@ -1,8 +1,4 @@
 import numpy as np
-import cProfile as profile
-import pyximport
-pyximport.install()
-from leg_ik_fast import solve_fast
 
 
 class LegIK(object):
@@ -14,9 +10,6 @@ class LegIK(object):
         self.p1 = p1.astype(float)
 
     def solve(self):
-        return solve_fast(self.p0, self.p1, self.m, self.l)
-
-    def solve_python(self):
         p0 = self.p0
         p1 = self.p1
 

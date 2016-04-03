@@ -2,20 +2,11 @@ import numpy as np
 from numpy import radians, degrees
 import scipy as sp
 import scipy.optimize as optimize
+import cProfile as profile
 import math
-
-
-def rotate_vector(vector, axis, angle):
-    """
-    Uses Rodrigues rotation formula
-    axis must be a normal vector
-    """
-    k = axis
-    v = vector
-    v_rot = (v * np.cos(angle) + np.cross(k, v) * np.sin(angle) +
-             k * (np.dot(k, v)) * (1 - np.cos(angle)))
-
-    return v_rot
+import pyximport
+pyximport.install()
+from utilities import rotate_vector_fast, point_line_distance_fast
 
 
 def rotation_matrix(axis, theta):
@@ -36,20 +27,6 @@ def rotation_matrix(axis, theta):
     return np.array([[aa+bb-cc-dd, 2*(bc+ad), 2*(bd-ac)],
                      [2*(bc-ad), aa+cc-bb-dd, 2*(cd+ab)],
                      [2*(bd+ac), 2*(cd-ab), aa+dd-bb-cc]])
-
-
-def point_line_distance(point, line_slope):
-    """
-    Based on https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
-    Assumes line passes through zero
-    Let b = 1
-    """
-    x0 = point[0]
-    y0 = point[1]
-    a = -line_slope
-
-    distance = np.abs(a * x0 + y0) / np.sqrt(a ** 2 + 1)
-    return distance
 
 
 class PlatformIK(object):
@@ -90,7 +67,7 @@ class PlatformIK(object):
 
         # If necessary, these points are calculated like they
         # are in the errors function.
-        p0_v = rotate_vector(self.l * self.e_v, self.n_v, -self.theta)
+        p0_v = rotate_vector_fast(self.l * self.e_v, self.n_v, -self.theta)
         p1_v = np.dot(rot_mat, p0_v)
         p2_v = np.dot(rot_mat, p1_v)
         p0 = p0_v + self.p_c
@@ -106,7 +83,7 @@ class PlatformIK(object):
 
         # Because n_v is fixed, after finding p0, a precomputed
         # rotation matrix can be used to find p1 and p2.
-        p0_v = rotate_vector(l * e_v, n_v, -theta)
+        p0_v = rotate_vector_fast(l * e_v, n_v, -theta)
         p1_v = np.dot(rot_mat, p0_v)
         p2_v = np.dot(rot_mat, p1_v)
 
@@ -117,30 +94,30 @@ class PlatformIK(object):
 
         n_p = pc + n * n_v
 
-        return (point_line_distance(p0, 0),
-                point_line_distance(p1, -tan60),
-                point_line_distance(p2, tan60),
+        return (point_line_distance_fast(p0, 0),
+                point_line_distance_fast(p1, -tan60),
+                point_line_distance_fast(p2, tan60),
                 n_p[2] - h)
 
 
 if __name__ == "__main__":
     np.set_printoptions(suppress=True)
 
-    gx_v = np.array([1, 0, 0])
-    gy_v = np.array([0, 1, 0])
-    gz_v = np.array([0, 0, 1])
+    gx_v = np.array([1., 0., 0.])
+    gy_v = np.array([0., 1., 0.])
+    gz_v = np.array([0., 0., 1.])
 
-    e_v = np.array([1, 0, 0])
-    f_v = np.array([0, 1, 0])
+    e_v = np.array([1., 0., 0.])
+    f_v = np.array([0., 1., 0.])
 
-    e_v = rotate_vector(e_v, gz_v, radians(0))
-    f_v = rotate_vector(f_v, gz_v, radians(0))
+    e_v = rotate_vector_fast(e_v, gz_v, radians(0))
+    f_v = rotate_vector_fast(f_v, gz_v, radians(0))
 
-    e_v = rotate_vector(e_v, gy_v, radians(-10))
-    f_v = rotate_vector(f_v, gy_v, radians(-10))
+    e_v = rotate_vector_fast(e_v, gy_v, radians(-10))
+    f_v = rotate_vector_fast(f_v, gy_v, radians(-10))
 
-    e_v = rotate_vector(e_v, gx_v, radians(-10))
-    f_v = rotate_vector(f_v, gx_v, radians(-10))
+    e_v = rotate_vector_fast(e_v, gx_v, radians(-10))
+    f_v = rotate_vector_fast(f_v, gx_v, radians(-10))
 
     pik = PlatformIK(l=1, n=0.1)
     theta, centroid, points = pik.solve(e_v, f_v, 1)

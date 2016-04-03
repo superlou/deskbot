@@ -1,6 +1,6 @@
 import numpy as np
-from platform_ik import PlatformIK
-from leg_ik import LegIK
+from platform_ik_fast import PlatformIK
+from leg_ik_fast import LegIK
 
 
 class FullIK(object):
