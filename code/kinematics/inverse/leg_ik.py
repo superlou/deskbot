@@ -54,5 +54,5 @@ if __name__ == "__main__":
     np.set_printoptions(suppress=True)
 
     lik = LegIK(np.array([0, 0, 0]), np.array([1, 1, 1]), 1, 1)
-    profile.run("for i in range(10000): root_angle = lik.solve()")
+    root_angle = lik.solve()
     print np.degrees(root_angle)

@@ -3,9 +3,9 @@
   (general
     (links 34)
     (no_connects 0)
-    (area 121.209999 57.709999 148.665001 111.835001)
+    (area 118.48641 56.7826 149.840734 113.60688)
     (thickness 1.6)
-    (drawings 12)
+    (drawings 11)
     (tracks 125)
     (zones 0)
     (modules 14)
@@ -832,9 +832,6 @@
       (net 2 GND))
   )
 
-  (gr_text "Move caps away from connector" (at 100.965 84.455) (layer Cmts.User)
-    (effects (font (size 1.5 1.5) (thickness 0.3)))
-  )
   (gr_line (start 121.285 57.785) (end 121.285 111.76) (layer Edge.Cuts) (width 0.15))
   (gr_line (start 148.59 57.785) (end 121.285 57.785) (layer Edge.Cuts) (width 0.15))
   (gr_line (start 148.59 111.76) (end 148.59 57.785) (layer Edge.Cuts) (width 0.15))
