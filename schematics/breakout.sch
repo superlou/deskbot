@@ -505,8 +505,6 @@ Wire Wire Line
 Wire Wire Line
 	9050 1850 8950 1850
 Connection ~ 8950 1950
-Text Notes 8700 1250 0    60   ~ 0
-http://www.gravitech.us/poja2x51.html
 Wire Wire Line
 	7250 3150 7250 3100
 Wire Wire Line
