@@ -1,4 +1,6 @@
+import sys
 import signal
+import time
 import numpy as np
 from pi_blaster_servos import PiBlasterServos
 from servo import Servo
@@ -22,28 +24,24 @@ def set_servo_angles(pbs, angles):
         pbs[3] = angles[3]
 
 
-def solve_servos(pbs, ik, e_v, f_v, height):
+def behavior(pbs, full_ik, f_v, t, freq):
+    start_time = time.time()
+    y_t = 0.3 * np.cos(2 * np.pi * freq * t)
+    z_t = 0.3 * np.sin(2 * np.pi * freq * t)
+    e_v = np.array([1, y_t, z_t])
+    e_v = e_v / np.linalg.norm(e_v)
+
     angles = full_ik.solve(e_v, f_v, height)
     set_servo_angles(pbs, angles)
 
+    dt = time.time() - start_time
+    t += dt
+    print(dt)
+    return t
 
-def pan_global(e_v, f_v, angle):
-    gz_v = np.array([0, 0, 1])
-    e_v = rotate_vector(e_v, gz_v, angle)
-    f_v = rotate_vector(f_v, gz_v, angle)
-    return e_v, f_v
-
-
-def pitch_local(e_v, f_v, angle):
-    e_v = rotate_vector(e_v, f_v, angle)
-    return e_v, f_v
-
-
-def roll_local(e_v, f_v, angle):
-    f_v = rotate_vector(f_v, e_v, angle)
-    return e_v, f_v
 
 if __name__ == "__main__":
+    print('Starting')
     s0 = Servo(0.15, 0.065, 0.225)  # HS-311
     s1 = Servo(0.15, 0.065, 0.225)
     s2 = Servo(0.15, 0.065, 0.225)
@@ -57,7 +55,6 @@ if __name__ == "__main__":
     reset_servos(pbs)
 
     def on_terminate(signal, frame):
-        curses.endwin()
         reset_servos(pbs)
         pbs.turn_off()
         sys.exit()
@@ -72,16 +69,12 @@ if __name__ == "__main__":
     e_v = np.array([1, 0, 0])
     f_v = np.array([0, 1, 0])
     height = 6
-    solve_servos(pbs, full_ik, e_v, f_v, height)
+    angles = full_ik.solve(e_v, f_v, height)
+    set_servo_angles(pbs, angles)
 
     t = 0
+    dt = 0
+    freq = 1.0
 
     while True:
-        y_t = 0.1 * np.cos(2 * np.pi * 0.1 * t)
-        z_t = 0.1 * np.sin(2 * np.pi * 0.1 * t)
-        e_v = np.array([1, y_t, z_t])
-        e_v = e_v / np.linalg.norm(e_v)
-
-        solve_servos(pbs, full_ik, e_v, f_v, height)
-
-        t += 1
+        profile.run("t = behavior(pbs, full_ik, f_v, t, freq)")
