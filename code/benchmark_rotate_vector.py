@@ -1,5 +1,6 @@
 import cProfile as profile
 import numpy
+import sys
 from numpy import radians, array
 from kinematics.inverse.platform_ik import rotate_vector
 import pyximport
@@ -11,5 +12,10 @@ if __name__ == "__main__":
     gy_v = array([0., 1., 0.])
     angle = radians(10.)
 
-    profile.run("for i in range(10000): rotate_vector(e_v, gy_v, angle)")
-    profile.run("for i in range(10000): rotate_vector_fast(e_v, gy_v, angle)")
+    if len(sys.argv) > 1:
+        runs = int(sys.argv[1])
+    else:
+        runs = 1
+
+    profile.run("for i in range(runs): rotate_vector(e_v, gy_v, angle)")
+    profile.run("for i in range(runs): rotate_vector_fast(e_v, gy_v, angle)")
