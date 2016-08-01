@@ -3,11 +3,12 @@ import signal
 import time
 import numpy as np
 from pi_blaster_servos import PiBlasterServos
-from servo import Servo
 from kinematics.inverse.full_ik import FullIK
 from kinematics.utilities import rotate_vector
 import cProfile as profile
-
+import pyximport
+pyximport.install()
+from servo_fast import ServoFast as Servo
 
 def reset_servos(pbs):
     pbs[0] = 0
@@ -17,12 +18,13 @@ def reset_servos(pbs):
 
 
 def set_servo_angles(pbs, angles):
+    start = time.time()
     if not any(np.isnan(angles)):
         pbs[0] = angles[0]
         pbs[1] = angles[1]
         pbs[2] = angles[2]
         pbs[3] = angles[3]
-
+    # print time.time() - start
 
 def behavior(pbs, full_ik, f_v, t, freq):
     start_time = time.time()
@@ -36,7 +38,7 @@ def behavior(pbs, full_ik, f_v, t, freq):
 
     dt = time.time() - start_time
     t += dt
-    print(dt)
+    # print(dt)
     return t
 
 
@@ -77,4 +79,4 @@ if __name__ == "__main__":
     freq = 1.0
 
     while True:
-        profile.run("t = behavior(pbs, full_ik, f_v, t, freq)")
+        t = behavior(pbs, full_ik, f_v, t, freq)

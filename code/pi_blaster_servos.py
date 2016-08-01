@@ -26,3 +26,6 @@ class PiBlasterServos(object):
 
     def turn_off(self):
         pass
+
+    def close(self):
+        self.device.close()
